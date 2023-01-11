@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { MainScreenS } from './styles';
+import { MainScreenS,BMEPanel } from './styles';
 
 const source = {
   pairs: [
@@ -69,11 +69,11 @@ const MainScreenC = ({
               })
             }
           </nav>
-
-          <div className="scroll js-scroll">Scroll</div>
-
         </div>
       </MainScreenS>
+      <BMEPanel>
+          
+      </BMEPanel>
     </>
   );
 };

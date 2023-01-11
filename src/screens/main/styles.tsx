@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 
-
+export const BMEPanel = styled.div`
+    position:absolute;
+    right:0px;
+    bottom:0px;
+`
 export const MainScreenS = styled.div`
     position:fixed;
     width:100vw;

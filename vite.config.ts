@@ -13,7 +13,8 @@ export default ({ command }: ConfigEnv): UserConfig => {
       plugins: [react()],
       resolve: {
         alias: {
-          '/@': srcRoot
+          '/@': srcRoot,
+          fs: require.resolve('rollup-plugin-node-builtins'),
         }
       },
       build: {
@@ -36,7 +37,8 @@ export default ({ command }: ConfigEnv): UserConfig => {
     plugins: [react()],
     resolve: {
       alias: {
-        '/@': srcRoot
+        '/@': srcRoot,
+        fs: require.resolve('rollup-plugin-node-builtins'),
       }
     },
     build: {

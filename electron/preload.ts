@@ -1,12 +1,14 @@
 import { ipcRenderer, contextBridge } from 'electron';
 
+
+window.ipcRenderer = require('electron').ipcRenderer;
+
 declare global {
   interface Window {
     Main: typeof api;
     ipcRenderer: typeof ipcRenderer;
   }
 }
-
 const api = {
   /**
    * Here you can expose functions to the renderer process

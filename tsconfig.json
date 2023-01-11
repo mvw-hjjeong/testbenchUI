@@ -1,21 +1,30 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "types": ["vite/client", "node"],
-    "allowJs": false,
-    "skipLibCheck": false,
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react"
+      "target": "es6",
+      "lib": ["DOM", "DOM.Iterable", "ESNext"],
+      "types": ["vite/client", "node"],
+      "module": "CommonJS",
+      "esModuleInterop": true,
+      "noUnusedLocals": false,
+      "noUnusedParameters": false,
+      "strict": true,
+      "allowJs": true,
+      "jsx": "react-native",
+      "moduleResolution": "node",
+      "noImplicitReturns": true,
+      "resolveJsonModule": true,
+      "outDir": "./dist",
+      "skipLibCheck": true,
+      "baseUrl": ".", 
+      "paths": {
+      "~/*": [  
+          "src/*"
+      ]
+      }
   },
-  "exclude": ["node_modules"],
-  "include": ["**/*.ts", "**/*.tsx", "**/*.js"]
+  "exclude": [
+      "node_modules",
+      "__tests__",
+      "**/*.config.js"
+  ]
 }

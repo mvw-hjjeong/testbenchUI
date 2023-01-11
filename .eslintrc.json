@@ -1,64 +1,63 @@
 {
+    "root": true,
     "env": {
-        "browser": true,
-        "es2021": true
+      "browser": true,
+      "node": true
     },
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:@typescript-eslint/recommended",
-        "airbnb",
-        "plugin:prettier/recommended",
-        "prettier"
-    ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
-        "ecmaVersion": 12,
-        "sourceType": "module"
+      "ecmaVersion": 2020
     },
-    "plugins": [
-        "react",
-        "@typescript-eslint",
-        "prettier"
+    "plugins": ["@typescript-eslint", "react"],
+    "extends": [
+      "naver/es5",
+      "plugin:react/recommended",
+      "plugin:@typescript-eslint/eslint-recommended"
     ],
     "rules": {
-        // Prettier
-        "prettier/prettier": "error",
-        // Typescript
-        "no-use-before-define": "off",
-        "import/prefer-default-export": "warn",
-        "@typescript-eslint/no-use-before-define": ["error"],
-        "@typescript-eslint/no-unused-vars": "warn",
-        "@typescript-eslint/no-explicit-any": "warn",
-        "@typescript-eslint/no-var-requires": "warn",
-        // react
-        "react/require-default-props": 0,
-        "react/button-has-type": 0,
-        "react/no-children-prop": 0,
-        "react/jsx-props-no-spreading": 0,
-        "react/function-component-definition": ["warn", {
-            "namedComponents": "function-declaration",
-            "unnamedComponents": "function-expression"
-        }],
-        "react/jsx-filename-extension": [
-            2,
-            {
-                "extensions": [".js",".jsx",".ts",".tsx"]
-            }
-        ],
-        // Import
-        "import/extensions": 0
-    },
-    "settings": {
-        "import/resolver": {
-          "node": {
-            "extensions": [".js", ".jsx", ".ts", ".tsx"]
-          }
-        },
-        "import/core-modules": [ "electron", "electron-is-dev" ]
-    },
-    "ignorePatterns": ["node_modules/", "dist/", "main/"]
-}
+      //turn-off options
+      "radix": 0,
+      "no-console": 0,
+      "no-unused-vars": 0,
+      "no-confusing-arrow": 0,
+      "object-curly-spacing": 0,
+      "no-use-before-define": 0,
+      "default-case": 0,
+      "newline-per-chained-call": 0,
+      "prefer-template": 0,
+      "no-nested-ternary": 0,
+      "react/prop-types": 0,
+      "react/display-name": 0,
+      "import/prefer-default-export": 0,
+      "max-len": 0,
+      //string options
+      "quotes": ["error", "single"],
+      //with object type options
+      "indent": ["warn", 2, {
+        "SwitchCase": 1
+        }
+      ],
+      "array-element-newline": ["error", {
+          "ArrayExpression": "consistent"
+        }
+      ],
+      "comma-dangle": ["error", {
+          "arrays": "only-multiline",
+          "objects": "only-multiline",
+          "imports": "always",
+          "exports": "always",
+          "functions": "never"
+        }
+      ],
+      "object-curly-newline": ["error", {
+          "ImportDeclaration": "always"
+        }
+      ],
+      "@typescript-eslint/no-unused-vars": ["error", {
+          "varsIgnorePattern": "React"
+        }
+      ],
+      "linebreak-style":"off"
+    }
+  }
+  

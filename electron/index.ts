@@ -8,6 +8,7 @@ import isDev from 'electron-is-dev';
 const height = 600;
 const width = 800;
 
+require("@electron/remote/main").initialize();
 function createWindow() {
   // Create the browser window.
   const window = new BrowserWindow({
@@ -19,7 +20,9 @@ function createWindow() {
     resizable: true,
     fullscreenable: true,
     webPreferences: {
-      preload: join(__dirname, 'preload.js')
+      preload: join(__dirname, 'preload.js'),
+      contextIsolation: false,
+      nodeIntegration: true
     }
   });
 

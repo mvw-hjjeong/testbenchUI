@@ -10,7 +10,7 @@ function App() {
       'utf-8',
       (err, data) => {
         if (err) throw err;
-        alert(data)
+        console.log(data)
       }
     );
   })

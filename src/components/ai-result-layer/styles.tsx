@@ -1,11 +1,6 @@
 import styled from 'styled-components';
 
-export const BMEPanel = styled.div`
-    position:absolute;
-    right:0px;
-    bottom:0px;
-`
-export const MainScreenS = styled.div`
+export const Layer = styled.div`
     position:fixed;
     width:100vw;
     height: 100vh; 
@@ -217,7 +212,7 @@ export const MainScreenS = styled.div`
       margin: 0;
       min-width: 12.5rem;
       transform-origin: top;
-      filter: grayscale(100%);
+      background-color: transparent;
 
       &:first-child{
         top: -1.5rem;

@@ -1,8 +1,20 @@
 import React,{useEffect} from "react";
-import MainScreenC from './contents';
 import gsap, { Power4, Expo, Linear } from 'gsap';
 import * as THREE from 'three';
-import { useWindowSize,useScroll } from '../../utils/hooks';
+import { useWindowSize,useScroll } from '@/utils/hooks';
+import {BMEResultLayer,AIResultLayer} from '@/components';
+import bg_steel from '@/assets/bg_steel.png';
+import bg_asphalt from '@/assets/bg_asphalt.png';
+import bg_grass from '@/assets/bg_grass.png';
+import bg_acrylic from '@/assets/bg_acrylic.png';
+
+
+const images = [
+  bg_asphalt,
+  bg_acrylic,
+  bg_grass,
+  bg_steel,
+];
 
 let el : HTMLElement = undefined;
 let inner: HTMLElement = undefined;
@@ -12,7 +24,7 @@ let bullets: HTMLElement = undefined;
 let data = {
   current: 0,
   next: 1,
-  total: 2,
+  total: 3,
   delta: 0
 }
 
@@ -84,11 +96,6 @@ const MainScreen = ({
   }
   `
   const mouseWheel = useScroll()
-  const images = [
-    'https://yumai.s3.ap-northeast-2.amazonaws.com/main/1.jpg',
-    'https://yumai.s3.ap-northeast-2.amazonaws.com/main/4.jpg',
-    'https://yumai.s3.ap-northeast-2.amazonaws.com/main/2.jpg'
-  ];
 
   const setup = () => {
     scene = new THREE.Scene()
@@ -355,7 +362,11 @@ const MainScreen = ({
 
   return (
     <>
-      <MainScreenC/>
+      <AIResultLayer/>
+      <BMEResultLayer/>
+      <div>
+
+      </div>
     </>
   );
 };

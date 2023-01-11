@@ -1,8 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'LINESeedKR';
+  src: url('./assets/fonts/LINESeedKR-Bd.woff2') format('woff2');
+  font-style: normal;
+}
+
+*{
+  font-family: 'LINESeedKR';
+}
 /* For AppBar */
 .draggable {
     -webkit-user-select: none;

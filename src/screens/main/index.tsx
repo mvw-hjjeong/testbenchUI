@@ -1,59 +1,55 @@
-import React,{useEffect} from "react";
-import gsap, { Power4, Expo, Linear } from 'gsap';
-import * as THREE from 'three';
-import { useWindowSize,useScroll } from '@/utils/hooks';
-import {BMEResultLayer,AIResultLayer} from '@/components';
-import bg_steel from '@/assets/bg_steel.png';
-import bg_asphalt from '@/assets/bg_asphalt.png';
-import bg_grass from '@/assets/bg_grass.png';
-import bg_acrylic from '@/assets/bg_acrylic.png';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import gsap, { Power4, Expo, Linear } from "gsap";
+import * as THREE from "three";
+import { useWindowSize, useScroll } from "@/utils/hooks";
+import { BMEResultLayer, AIResultLayer, SphereLayer } from "@/components";
 
+import bg_steel from "@/assets/bg_steel.png";
+import bg_asphalt from "@/assets/bg_asphalt.png";
+import bg_grass from "@/assets/bg_grass.png";
+import bg_acrylic from "@/assets/bg_acrylic.png";
+import appStates from "@/utils/appStates";
 
-const images = [
-  bg_asphalt,
-  bg_acrylic,
-  bg_grass,
-  bg_steel,
-];
+const images = [bg_asphalt, bg_acrylic, bg_grass, bg_steel];
 
-let el : HTMLElement = undefined;
-let inner: HTMLElement = undefined;
-let slides: HTMLElement = undefined;
-let bullets: HTMLElement = undefined;
+let el: HTMLElement | any = undefined;
+let inner: HTMLElement | any = undefined;
+let slides: HTMLElement[] | any = undefined;
+let bullets: HTMLElement[] | any = undefined;
 
-let data = {
-  current: 0,
-  next: 1,
+let page = {
+  prev: 0,
+  current: 1,
   total: 3,
-  delta: 0
-}
+  delta: 0,
+};
 
 let state = {
   animating: false,
   text: false,
-  initial: true
-}
+  initial: true,
+};
 
-let renderer = null;
-let scene = null;
+let renderer: THREE.WebGLRenderer | any = null;
+let scene: THREE.Scene | any = null;
 let clock = null;
-let camera = null;
-let textures = null;
-let texture = null;
-let mat = null;
-let disp = null;
+let camera: THREE.Camera | any = null;
+let textures: THREE.Texture[] | any = null;
+let texture: THREE.Texture | any = null;
+let mat: THREE.ShaderMaterial | any = null;
+let disp: THREE.Texture | any = null;
 
-const MainScreen = ({
+const MainScreen = ({}) => {
+  let size = useWindowSize();
+  const detectedSurface: number = appStates((s: any) => s.detectedSurface);
 
-}) => {
-  let size = useWindowSize()
   const vert = `
   varying vec2 vUv;
   void main() {
     vUv = uv;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
-  `
+  `;
 
   const frag = `
   varying vec2 vUv;
@@ -94,19 +90,19 @@ const MainScreen = ({
     
     gl_FragColor = mix(_texture1, _texture2, dispPower);
   }
-  `
-  const mouseWheel = useScroll()
+  `;
+  const mouseWheel = useScroll();
 
   const setup = () => {
-    scene = new THREE.Scene()
-    clock = new THREE.Clock(true)
+    scene = new THREE.Scene();
+    clock = new THREE.Clock(true);
 
-    renderer = new THREE.WebGLRenderer({ alpha: true })
-    renderer.setPixelRatio(window.devicePixelRatio)
-    renderer.setSize(el.offsetWidth, el.offsetHeight)
+    renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(el.offsetWidth, el.offsetHeight);
 
-    inner.appendChild(renderer.domElement)
-  }
+    inner.appendChild(renderer.domElement);
+  };
 
   const cameraSetup = () => {
     camera = new THREE.OrthographicCamera(
@@ -116,260 +112,321 @@ const MainScreen = ({
       el.offsetHeight / -2,
       1,
       1000
-    )
+    );
 
-    camera.lookAt(scene.position)
-    camera.position.z = 1
-  }
+    camera.lookAt(scene.position);
+    camera.position.z = 1;
+  };
 
-  const render = () => {
-    renderer.render(scene, camera)
-  }
+  const render = useCallback(() => {
+    renderer.render(scene, camera);
+  }, []);
 
   const loadTextures = () => {
-    const loader = new THREE.TextureLoader()
-    loader.crossOrigin = ''
+    const loader = new THREE.TextureLoader();
+    loader.crossOrigin = "";
 
-    textures = []
-    images.forEach((image, index) => {
-      texture = loader.load(image + '?v=' + Date.now(), render())
-      texture.minFilter = THREE.LinearFilter
-      texture.generateMipmaps = false
+    textures = [];
+    images.forEach((image: string, index: number) => {
+      texture = loader.load(image + "?v=" + Date.now(), render());
+      texture.minFilter = THREE.LinearFilter;
+      texture.generateMipmaps = false;
 
       if (index === 0 && mat) {
-        mat.uniforms.size.value = [
-          size.innerWidth,
-          size.innerHeight
-        ]
+        mat.uniforms.size.value = [size.innerWidth, size.innerHeight];
       }
 
-      textures.push(texture)
-    })
+      textures.push(texture);
+    });
 
-    disp = loader.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/58281/rock-_disp.png', render())
-    disp.magFilter = disp.minFilter = THREE.LinearFilter
-    disp.wrapS = disp.wrapT = THREE.RepeatWrapping
-  }
-
+    disp = loader.load("../../assets/shader_rock-disp.png", render());
+    disp.magFilter = disp.minFilter = THREE.LinearFilter;
+    disp.wrapS = disp.wrapT = THREE.RepeatWrapping;
+  };
 
   const createMesh = () => {
+    console.log("createMesh");
     mat = new THREE.ShaderMaterial({
       uniforms: {
-        dispPower: { type: 'f', value: 0.0 },
-        intensity: { type: 'f', value: 0.5 },
-        res: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        dispPower: { type: "f", value: 0.0 },
+        intensity: { type: "f", value: 0.5 },
+        res: {
+          value: new THREE.Vector2(window.innerWidth, window.innerHeight),
+        },
         size: { value: new THREE.Vector2(1, 1) },
-        texture1: { type: 't', value: textures[0] },
-        texture2: { type: 't', value: textures[1] },
-        disp: { type: 't', value: disp }
+        texture1: { type: "t", value: textures[0] },
+        texture2: { type: "t", value: textures[1] },
+        disp: { type: "t", value: disp },
       },
       transparent: true,
       vertexShader: vert,
-      fragmentShader: frag
-    })
+      fragmentShader: frag,
+    });
 
-    const geometry = new THREE.PlaneBufferGeometry(
+    const geometry = new THREE.PlaneGeometry(
       el.offsetWidth,
       el.offsetHeight,
       1
-    )
+    );
 
-    const mesh = new THREE.Mesh(geometry, mat)
+    const mesh = new THREE.Mesh(geometry, mat);
 
-    scene.add(mesh)
-  }
+    scene.add(mesh);
+  };
 
   const setStyles = () => {
-    slides.forEach((slide, index) => {
-      if (index === 0) return
+    slides.forEach((slide: HTMLElement, index: number) => {
+      if (index === 0) return;
 
-      gsap.set(slide, { autoAlpha: 0 })
-    })
+      gsap.set(slide, { autoAlpha: 0 });
+    });
 
-    bullets.forEach((bullet, index) => {
-      if (index === 0) return
+    bullets.forEach((bullet: HTMLElement, index: number) => {
+      if (index === 0) return;
 
-      const txt = bullet.querySelector('.js-slider-bullet__text')
-      const line = bullet.querySelector('.js-slider-bullet__line')
+      const txt = bullet.querySelector(".js-slider-bullet__text");
+      const line = bullet.querySelector(".js-slider-bullet__line");
 
       gsap.set(txt, {
-        alpha: 0.25
-      })
+        alpha: 0.25,
+      });
       gsap.set(line, {
         scaleX: 0,
-        transformOrigin: 'left'
-      })
-    })
-  }
-  const changeTexture = () => {
-    mat.uniforms.texture1.value = textures[data.current]
-    mat.uniforms.texture2.value = textures[data.next]
-  }
-  const transitionNext = () => {
+        transformOrigin: "left",
+      });
+    });
+  };
+  const setBeforeTexture = useCallback((value) => {
+    mat.uniforms.texture1.value = textures[value];
+    mat.uniforms.texture1.value.name = value;
+  }, []);
 
+  const setAfterTexture = useCallback((value) => {
+    mat.uniforms.texture2.value = textures[value];
+    mat.uniforms.texture2.value.name = value;
+  }, []);
+
+  const changeTexture = () => {
+    console.log(page.prev + "→" + page.current);
+    setBeforeTexture(page.current);
+    setAfterTexture(page.prev);
+  };
+
+  const transitionNext = () => {
     gsap.to(mat.uniforms.dispPower, 2.5, {
       value: 1,
       ease: Expo.easeInOut,
       onUpdate: render,
       onComplete: () => {
         mat.uniforms.dispPower.value = 0.0;
+        console.log(page);
         changeTexture();
         render();
         state.animating = false;
-      }
-    })
+      },
+    });
 
-    const current = slides[data.current]
-    const next = slides[data.next]
+    const current = slides[page.current];
+    const next = slides[page.prev];
 
-    const currentImages = current.querySelectorAll('.js-slide__img')
-    const nextImages = next.querySelectorAll('.js-slide__img')
+    const currentImages = current.querySelectorAll(".js-slide__img");
+    const nextImages = next.querySelectorAll(".js-slide__img");
 
-    const currentText = current.querySelectorAll('.js-slider__text-line div')
-    const nextText = next.querySelectorAll('.js-slider__text-line div')
+    const currentText = current.querySelectorAll(".js-slider__text-line div");
+    const nextText = next.querySelectorAll(".js-slider__text-line div");
 
-    const currentBullet = bullets[data.current]
-    const nextBullet = bullets[data.next]
+    const currentBullet = bullets[page.current];
+    const nextBullet = bullets[page.prev];
 
-    const currentBulletTxt = currentBullet.querySelectorAll('.js-slider-bullet__text')
-    const nextBulletTxt = nextBullet.querySelectorAll('.js-slider-bullet__text')
+    const currentBulletTxt = currentBullet.querySelectorAll(
+      ".js-slider-bullet__text"
+    );
+    const nextBulletTxt = nextBullet.querySelectorAll(
+      ".js-slider-bullet__text"
+    );
 
-    const currentBulletLine = currentBullet.querySelectorAll('.js-slider-bullet__line')
-    const nextBulletLine = nextBullet.querySelectorAll('.js-slider-bullet__line')
+    const currentBulletLine = currentBullet.querySelectorAll(
+      ".js-slider-bullet__line"
+    );
+    const nextBulletLine = nextBullet.querySelectorAll(
+      ".js-slider-bullet__line"
+    );
 
-    const tl = gsap.timeline({ paused: true })
+    const tl:any = gsap.timeline({ paused: true });
 
     if (state.initial) {
-      gsap.to('.js-scroll', 1.5, {
+      gsap.to(".js-scroll", 1.5, {
         yPercent: 100,
         alpha: 0,
-        ease: Power4.easeInOut
-      })
+        ease: Power4.easeInOut,
+      });
 
-      state.initial = false
+      state.initial = false;
     }
 
-    tl
-      .staggerFromTo(currentImages, 1.5, {
+    tl.staggerFromTo(
+      currentImages,
+      1.5,
+      {
         yPercent: 0,
-        scale: 1
-      }, {
+        scale: 1,
+      },
+      {
         yPercent: -185,
         scaleY: 1.5,
-        ease: Expo.easeInOut
-      }, 0.075)
-      .to(currentBulletTxt, 1.5, {
-        alpha: 0.25,
-        ease: Linear.easeNone
-      }, 0)
-      .set(currentBulletLine, {
-        transformOrigin: 'right'
-      }, 0)
-      .to(currentBulletLine, 1.5, {
-        scaleX: 0,
-        ease: Expo.easeInOut
-      }, 0)
+        ease: Expo.easeInOut,
+      },
+      0.075
+    )
+      .to(
+        currentBulletTxt,
+        1.5,
+        {
+          alpha: 0.25,
+          ease: Linear.easeNone,
+        },
+        0
+      )
+      .set(
+        currentBulletLine,
+        {
+          transformOrigin: "right",
+        },
+        0
+      )
+      .to(
+        currentBulletLine,
+        1.5,
+        {
+          scaleX: 0,
+          ease: Expo.easeInOut,
+        },
+        0
+      );
 
     if (currentText) {
-      tl
-        .fromTo(currentText, 2, {
-          yPercent: 0
-        }, {
+      tl.fromTo(
+        currentText,
+        2,
+        {
+          yPercent: 0,
+        },
+        {
           yPercent: -100,
-          ease: Power4.easeInOut
-        }, 0)
+          ease: Power4.easeInOut,
+        },
+        0
+      );
     }
 
-    tl
-      .set(current, {
-        autoAlpha: 0
-      })
-      .set(next, {
-        autoAlpha: 1
-      }, 1)
+    tl.set(current, {
+      autoAlpha: 0,
+    }).set(
+      next,
+      {
+        autoAlpha: 1,
+      },
+      1
+    );
 
     if (nextText) {
-      tl
-        .fromTo(nextText, 2, {
-          yPercent: 100
-        }, {
+      tl.fromTo(
+        nextText,
+        2,
+        {
+          yPercent: 100,
+        },
+        {
           yPercent: 0,
-          ease: Power4.easeOut
-        }, 1.5)
+          ease: Power4.easeOut,
+        },
+        1.5
+      );
     }
 
-    tl
-      .staggerFromTo(nextImages, 1.5, {
+    tl.staggerFromTo(
+      nextImages,
+      1.5,
+      {
         yPercent: 150,
-        scaleY: 1.5
-      }, {
+        scaleY: 1.5,
+      },
+      {
         yPercent: 0,
         scaleY: 1,
-        ease: Expo.easeInOut
-      }, 0.075, 1)
-      .to(nextBulletTxt, 1.5, {
-        alpha: 1,
-        ease: Linear.easeNone
-      }, 1)
-      .set(nextBulletLine, {
-        transformOrigin: 'left'
-      }, 1)
-      .to(nextBulletLine, 1.5, {
-        scaleX: 1,
-        ease: Expo.easeInOut
-      }, 1)
+        ease: Expo.easeInOut,
+      },
+      0.075,
+      1
+    )
+      .to(
+        nextBulletTxt,
+        1.5,
+        {
+          alpha: 1,
+          ease: Linear.easeNone,
+        },
+        1
+      )
+      .set(
+        nextBulletLine,
+        {
+          transformOrigin: "left",
+        },
+        1
+      )
+      .to(
+        nextBulletLine,
+        1.5,
+        {
+          scaleX: 1,
+          ease: Expo.easeInOut,
+        },
+        1
+      );
 
-    tl.play()
-  }
+    tl.play();
+  };
 
-  const nextSlide = () => {
-    if (state.animating) return
+  const nextSlide = (value) => {
+    if (state.animating) return;
+    state.animating = true;
+    page.current = value;
+    setAfterTexture(value);
+    transitionNext();
+  };
 
-    state.animating = true
+  useEffect(() => {
+    el = document.querySelector(".js-slider");
+    inner = el.querySelector(".js-slider__inner");
+    slides = [...el.querySelectorAll(".js-slide")];
+    bullets = [...el.querySelectorAll(".js-slider-bullet")];
 
-    transitionNext()
+    setup();
+    cameraSetup();
+    loadTextures();
+    createMesh();
+    setStyles();
+    render();
+    onClickBg();
+  }, []);
 
-    data.current = data.current === data.total ? 0 : data.current + 1
-    data.next = data.current === data.total ? 0 : data.current + 1
-  }
-
-
-  useEffect(
-    () => {
-      el = document.querySelector('.js-slider');
-      inner = el.querySelector('.js-slider__inner');
-      slides = [...el.querySelectorAll('.js-slide')];
-      bullets = [...el.querySelectorAll('.js-slider-bullet')];
-
-      setup();
-      cameraSetup();
-      loadTextures();
-      createMesh();
-      setStyles();
-      render();
-      nextSlide();
-    },
-    [],
-  );
-  useEffect(
-    () => {
-      if (mouseWheel !== 0 && mouseWheel % 100 === 0) {
-        nextSlide();
-      }
-    },
-    [mouseWheel],
-  );
+  const onClickBg = () => {
+    const rand = Math.floor(Math.random() * 4);
+    console.log(rand);
+    if (rand !== page.current) {
+      nextSlide(rand);
+      console.log("onClickBg-END");
+    }
+  };
 
   return (
-    <>
-      <AIResultLayer/>
-      <BMEResultLayer/>
-      <div>
-
-      </div>
-    </>
+    <div onClick={onClickBg}>
+      <BMEResultLayer />
+      <AIResultLayer />
+      {/* <SphereLayer/> */}
+    </div>
   );
 };
 
 export default MainScreen;
-

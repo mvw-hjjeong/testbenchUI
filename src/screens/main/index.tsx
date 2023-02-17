@@ -213,21 +213,11 @@ const MainScreen = ({}) => {
   };
 
   const transitionNext = () => {
-    gsap.to(mat.uniforms.dispPower, 2.5, {
-      value: 1,
-      ease: Expo.easeInOut,
-      onUpdate: render,
-      onComplete: () => {
-        mat.uniforms.dispPower.value = 0.0;
-        console.log(page);
-        changeTexture();
-        render();
-        state.animating = false;
-      },
-    });
 
-    const current = slides[page.current];
-    const next = slides[page.prev];
+
+    const current = slides[page.prev];
+    const next = slides[page.current];
+
 
     const currentImages = current.querySelectorAll(".js-slide__img");
     const nextImages = next.querySelectorAll(".js-slide__img");
@@ -386,11 +376,27 @@ const MainScreen = ({}) => {
       );
 
     tl.play();
+
+    
+    gsap.to(mat.uniforms.dispPower, {
+      value: 1,
+      ease: Expo.easeInOut,
+      onUpdate: render,
+      onComplete: () => {
+        mat.uniforms.dispPower.value = 0.0;
+        console.log(page);
+        changeTexture();
+        render();
+        state.animating = false;
+      },
+      duration:2.5
+    });
   };
 
   const nextSlide = (value) => {
     if (state.animating) return;
     state.animating = true;
+    page.prev = page.current;
     page.current = value;
     setAfterTexture(value);
     transitionNext();

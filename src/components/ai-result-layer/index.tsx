@@ -7,7 +7,7 @@ const AIResultLayer = ({
 
 }) => {
   const sources = appStates((s:any) => s.sources);
-  const 
+
 
   return (
     <>

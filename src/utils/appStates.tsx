@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import produce from "immer";
 
 export default create((set) => ({
-  detectedSurface: 2,
+  detectedSurface: 0,
   setDetectedSurface: (value:number) =>
   set(
     produce((state) => {

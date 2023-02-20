@@ -32,6 +32,7 @@ const grassT = ():TextureT => {
     ao,
     rough,
     metal,
+    bScale: 1.0
   };
 };
 

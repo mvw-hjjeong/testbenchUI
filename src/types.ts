@@ -28,5 +28,13 @@ export type TextureT = {
   metal?: THREE.Texture;
   spec?: THREE.Texture;
   gloss?: THREE.Texture;
+  bScale?: number;
 };
 
+export type SphereLayerT={
+  props:any,
+  ref:React.RefObject<HTMLElement>
+}
+export type SphereLayerPropsT={ 
+  sphereTexture:TextureT
+}

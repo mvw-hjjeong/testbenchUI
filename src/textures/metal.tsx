@@ -7,17 +7,18 @@ const metalTexture = ():TextureT => {
   const repeatX = 4;
   const repeatY = 2;
 
-  const [base,normal, rough, metal] = useLoader(
+  const [base,bump, normal, rough, metal] = useLoader(
     THREE.TextureLoader,
     [
-      "../assets/pbr/metal/basecolor.png",
-      "../assets/pbr/metal/normal.png",
-      "../assets/pbr/metal/roughness.png",
-      "../assets/pbr/metal/metalness.png",
+      "../assets/pbr/metal/basecolor.jpg",
+      "../assets/pbr/metal/displacement.png",
+      "../assets/pbr/metal/normal.jpg",
+      "../assets/pbr/metal/roughness.jpg",
+      "../assets/pbr/metal/metalness.jpg",
     ]
   );
 
-  [base, normal, rough, metal].forEach((texture) => {
+  [base,bump, normal, rough, metal].forEach((texture) => {
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(repeatX, repeatY);
@@ -25,9 +26,11 @@ const metalTexture = ():TextureT => {
 
   return {
     base,
+    bump,
     normal,
     rough,
     metal,
+    bScale: 1.0
   };
 };
 

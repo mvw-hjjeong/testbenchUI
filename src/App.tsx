@@ -11,6 +11,7 @@ function App() {
       fs.readFile("D:/user/Desktop/fs.txt", "utf-8", (err:Error, data:any) => {
         if (err) throw err;
         setDetectedSurface(parseInt(data));
+
       });
     }, 1000);
   });

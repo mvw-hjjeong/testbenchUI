@@ -1,20 +1,15 @@
 import React, {
-  useEffect,
-  useCallback,
-  useState,
-  useRef,
   Suspense,
-  useMemo,
-  memo
+  forwardRef,
 } from "react";
-import { Canvas,MeshProps, useLoader, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import { grassTexture, asphaltTexture,acrylicTexture, metalTexture} from "@/textures";
-import appStates from "@/utils/appStates";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls} from "@react-three/drei";
+import {SphereLayerPropsT} from '@/types';
+import { Layer } from './styles';
 
-const SphereLayer = ({}) => {
+const SphereLayer = forwardRef(({sphereTexture}:SphereLayerPropsT, ref) => {
   return (
-
+    <Layer>
       <Canvas
         camera={{
           position: [5, 5, 5],
@@ -23,66 +18,27 @@ const SphereLayer = ({}) => {
         <pointLight position={[5, 10, -10]} intensity={0.5} />
         <pointLight position={[0, 0, 10]} intensity={0.5} />
         <Suspense fallback={null}>
-          <Sphere />
+          <mesh position={[0, 0, 0]} ref={ref}>
+            <sphereGeometry args={[3, 1024, 1024]} />
+            <meshPhysicalMaterial
+              transparent
+              map={sphereTexture.base}
+              displacementMap={sphereTexture.bump}
+              displacementScale={sphereTexture.bScale}
+              aoMap={sphereTexture.ao}
+              normalMap={sphereTexture.normal}
+              roughnessMap={sphereTexture.rough}
+              metalnessMap={sphereTexture.metal}
+              specularColorMap={sphereTexture.spec}
+              lightMap={sphereTexture.gloss}
+            />
+          </mesh>
         </Suspense>
-        <OrbitControls autoRotate autoRotateSpeed={0.1}/>
+        <OrbitControls autoRotate autoRotateSpeed={0.3}/>
       </Canvas>
+      </Layer>
   );
-};
+},);
 
-function Sphere() {
-  const sphereRef = useRef<MeshProps|any>(null);
-  const detectedSurface:number = appStates((s:any) => s.detectedSurface);
-  const _grassTexture = useMemo(grassTexture,[]);
-  const _asphaltTexture = useMemo(asphaltTexture,[])
-  const _acrylicTexture = useMemo(acrylicTexture,[])
-  const _metalTexture = useMemo(metalTexture,[])
-  const [texture,setTexture] = useState(_grassTexture);
-
-  const changeTexture = useCallback((value:number) =>{
-    switch (value) {
-      case 0: {
-        setTexture( _asphaltTexture);
-        break;
-      }
-      case 1: {
-        setTexture(_grassTexture);
-        break;
-      }
-      case 2: {
-        setTexture(_acrylicTexture);
-        break;
-      }
-      case 3: {
-        setTexture(_metalTexture);
-        break;
-      }
-      default: {
-        break;
-      }
-    }
-  },[])
-
-  useEffect(() => {
-    changeTexture(detectedSurface)
-  }, [detectedSurface]);
-
-  return (
-    <mesh position={[0, 0, 0]} ref={sphereRef}>
-      <sphereGeometry args={[3, 1024, 1024]} />
-      <meshPhysicalMaterial
-        map={texture.base}
-        displacementMap={texture.bump}
-        displacementScale={1}
-        aoMap={texture.ao}
-        normalMap={texture.normal}
-        roughnessMap={texture.rough}
-        metalnessMap={texture.metal}
-        specularColorMap={texture.spec}
-        lightMap={texture.gloss}
-      />
-    </mesh>
-  );
-}
 
 export default SphereLayer;

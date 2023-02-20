@@ -1,8 +1,21 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import gsap, { Power4, Expo, Linear } from "gsap";
 import * as THREE from "three";
 import { useWindowSize, useScroll } from "@/utils/hooks";
-import { BMEResultLayer, AIResultLayer, SphereLayer } from "@/components";
+import { Canvas, MeshProps, useLoader, useFrame } from "@react-three/fiber";
+import { BMEResultLayer, AIResultLayer, SphereLayer,MessageLayer } from "@/components";
+import {
+  grassTexture,
+  asphaltTexture,
+  acrylicTexture,
+  metalTexture,
+} from "@/textures";
 
 import bg_steel from "@/assets/bg_steel.png";
 import bg_asphalt from "@/assets/bg_asphalt.png";
@@ -42,6 +55,37 @@ let disp: THREE.Texture | any = null;
 const MainScreen = ({}) => {
   let size = useWindowSize();
   const detectedSurface: number = appStates((s: any) => s.detectedSurface);
+
+  const sphereRef = useRef<MeshProps | any>(null);
+  const _grassTexture = useMemo(grassTexture, []);
+  const _asphaltTexture = useMemo(asphaltTexture, []);
+  const _acrylicTexture = useMemo(acrylicTexture, []);
+  const _metalTexture = useMemo(metalTexture, []);
+  const [sphereTexture, setSphereTexture] = useState(_asphaltTexture);
+
+  const changeSphereTexture = useCallback((value: number) => {
+    switch (value) {
+      case 0: {
+        setSphereTexture(_asphaltTexture);
+        break;
+      }
+      case 1: {
+        setSphereTexture(_grassTexture);
+        break;
+      }
+      case 2: {
+        setSphereTexture(_acrylicTexture);
+        break;
+      }
+      case 3: {
+        setSphereTexture(_metalTexture);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }, []);
 
   const vert = `
   varying vec2 vUv;
@@ -92,7 +136,7 @@ const MainScreen = ({}) => {
   }
   `;
 
-  const setup = () => {
+  const setup = useCallback(() => {
     scene = new THREE.Scene();
     clock = new THREE.Clock(true);
 
@@ -101,9 +145,9 @@ const MainScreen = ({}) => {
     renderer.setSize(el.offsetWidth, el.offsetHeight);
 
     inner.appendChild(renderer.domElement);
-  };
+  }, []);
 
-  const cameraSetup = () => {
+  const cameraSetup = useCallback(() => {
     camera = new THREE.OrthographicCamera(
       el.offsetWidth / -2,
       el.offsetWidth / 2,
@@ -115,13 +159,13 @@ const MainScreen = ({}) => {
 
     camera.lookAt(scene.position);
     camera.position.z = 1;
-  };
+  }, []);
 
   const render = useCallback(() => {
     renderer.render(scene, camera);
-  }, []);
+  }, [renderer, scene, camera]);
 
-  const loadTextures = () => {
+  const loadTextures = useCallback(() => {
     const loader = new THREE.TextureLoader();
     loader.crossOrigin = "";
 
@@ -141,10 +185,9 @@ const MainScreen = ({}) => {
     disp = loader.load("../../assets/shader_rock-disp.png", render());
     disp.magFilter = disp.minFilter = THREE.LinearFilter;
     disp.wrapS = disp.wrapT = THREE.RepeatWrapping;
-  };
+  }, []);
 
-  const createMesh = () => {
-    console.log("createMesh");
+  const createMesh = useCallback(() => {
     mat = new THREE.ShaderMaterial({
       uniforms: {
         dispPower: { type: "f", value: 0.0 },
@@ -171,7 +214,7 @@ const MainScreen = ({}) => {
     const mesh = new THREE.Mesh(geometry, mat);
 
     scene.add(mesh);
-  };
+  }, []);
 
   const setStyles = () => {
     slides.forEach((slide: HTMLElement, index: number) => {
@@ -195,17 +238,24 @@ const MainScreen = ({}) => {
       });
     });
   };
-  const setBeforeTexture = useCallback((value) => {
-    mat.uniforms.texture1.value = textures[value];
-    mat.uniforms.texture1.value.name = value;
-  }, []);
 
-  const setAfterTexture = useCallback((value) => {
-    mat.uniforms.texture2.value = textures[value];
-    mat.uniforms.texture2.value.name = value;
-  }, []);
+  const setBeforeTexture = useCallback(
+    (value) => {
+      mat.uniforms.texture1.value = textures[value];
+      mat.uniforms.texture1.value.name = value;
+    },
+    [mat, textures]
+  );
 
-  const changeTexture = () => {
+  const setAfterTexture = useCallback(
+    (value) => {
+      mat.uniforms.texture2.value = textures[value];
+      mat.uniforms.texture2.value.name = value;
+    },
+    [mat, textures]
+  );
+
+  const changeBackgroundTexture = () => {
     console.log(page.prev + "→" + page.current);
     setBeforeTexture(page.current);
     setAfterTexture(page.prev);
@@ -214,9 +264,6 @@ const MainScreen = ({}) => {
   const transitionNext = () => {
     const current = slides[page.prev];
     const next = slides[page.current];
-
-    const currentImages = current.querySelectorAll(".js-slide__img");
-    const nextImages = next.querySelectorAll(".js-slide__img");
 
     const currentText = current.querySelectorAll(".js-slider__text-line div");
     const nextText = next.querySelectorAll(".js-slider__text-line div");
@@ -247,12 +294,26 @@ const MainScreen = ({}) => {
 
       state.initial = false;
     }
-
+    if (sphereRef.current) {
+      gsap.to(sphereRef.current.material, {
+        opacity: 0,
+        duration: 2,
+        ease: Power4.easeInOut,
+        onComplete: () => {
+          changeSphereTexture(detectedSurface);
+          gsap.to(sphereRef.current.material, {
+            opacity: 1,
+            duration: 2,
+            ease: Power4.easeInOut,
+          });
+        },
+      });
+    }
     // currentBullet
     gsap.to(currentBulletTxt, {
       alpha: 0.25,
       ease: Linear.easeNone,
-      duration:1.5,
+      duration: 1.5,
     });
     gsap.set(currentBulletLine, {
       transformOrigin: "right",
@@ -260,7 +321,7 @@ const MainScreen = ({}) => {
     gsap.to(currentBulletLine, {
       scaleX: 0,
       ease: Expo.easeInOut,
-      duration:1.5,
+      duration: 1.5,
     });
 
     // currentText
@@ -273,13 +334,14 @@ const MainScreen = ({}) => {
         {
           yPercent: -100,
           ease: Power4.easeInOut,
-          duration:2,
+          duration: 2,
         }
       );
     }
     gsap.set(current, {
       autoAlpha: 0,
     });
+
     gsap.set(next, {
       autoAlpha: 1,
     });
@@ -293,7 +355,7 @@ const MainScreen = ({}) => {
         {
           yPercent: 0,
           ease: Power4.easeOut,
-          duration:2,
+          duration: 2,
         }
       );
     }
@@ -302,7 +364,7 @@ const MainScreen = ({}) => {
     gsap.to(nextBulletTxt, {
       alpha: 1,
       ease: Linear.easeNone,
-      duration:1.5,
+      duration: 1.5,
     });
     gsap.set(nextBulletLine, {
       transformOrigin: "left",
@@ -310,7 +372,7 @@ const MainScreen = ({}) => {
     gsap.to(nextBulletLine, {
       scaleX: 1,
       ease: Expo.easeInOut,
-      duration:1.5,
+      duration: 1.5,
     });
 
     gsap.to(mat.uniforms.dispPower, {
@@ -320,7 +382,7 @@ const MainScreen = ({}) => {
       onComplete: () => {
         mat.uniforms.dispPower.value = 0.0;
         console.log(page);
-        changeTexture();
+        changeBackgroundTexture();
         render();
         state.animating = false;
       },
@@ -349,25 +411,22 @@ const MainScreen = ({}) => {
     createMesh();
     setStyles();
     render();
-    onClickBg();
   }, []);
 
-  const onClickBg = () => {
-    if (detectedSurface !== page.current) {
-      nextSlide(detectedSurface);
-      console.log("onClickBg-END");
-    }
+  const onChangeDetectedSurface = () => {
+    if (detectedSurface !== page.current) nextSlide(detectedSurface);
   };
 
-  useEffect(()=>{
-    onClickBg()
-  },[detectedSurface])
+  useEffect(() => {
+    onChangeDetectedSurface();
+  }, [detectedSurface]);
 
   return (
     <>
+      <MessageLayer/>
       <BMEResultLayer />
       <AIResultLayer />
-      <SphereLayer/>
+      <SphereLayer ref={sphereRef} sphereTexture={sphereTexture} />
     </>
   );
 };

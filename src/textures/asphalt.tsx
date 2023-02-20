@@ -36,6 +36,7 @@ const asphaltT = ():TextureT => {
     metal,
     spec,
     gloss,
+    bScale: 0.1
   };
 };
 

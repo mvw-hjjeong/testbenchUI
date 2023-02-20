@@ -10,6 +10,7 @@ export const Layer = styled.div`
     font-family: 'helvetica neue', helvetica, sans-serif;
     overflow: hidden;
     background:#111;
+    z-index:3;
   a{
     color: #fff;
     text-decoration: none;

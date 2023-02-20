@@ -32,6 +32,7 @@ const acrylicT = ():TextureT => {
     ao,
     rough,
     metal,
+    bScale: 1.0
   };
 };
 

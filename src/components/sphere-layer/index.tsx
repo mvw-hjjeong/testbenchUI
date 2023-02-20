@@ -9,12 +9,12 @@ import React, {
 } from "react";
 import { Canvas,MeshProps, useLoader, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { grassTexture, asphaltTexture,acrylicTexture } from "@/textures";
+import { grassTexture, asphaltTexture,acrylicTexture, metalTexture} from "@/textures";
 import appStates from "@/utils/appStates";
 
 const SphereLayer = ({}) => {
   return (
-    <>
+
       <Canvas
         camera={{
           position: [5, 5, 5],
@@ -27,7 +27,6 @@ const SphereLayer = ({}) => {
         </Suspense>
         <OrbitControls autoRotate autoRotateSpeed={0.1}/>
       </Canvas>
-    </>
   );
 };
 
@@ -37,20 +36,25 @@ function Sphere() {
   const _grassTexture = useMemo(grassTexture,[]);
   const _asphaltTexture = useMemo(asphaltTexture,[])
   const _acrylicTexture = useMemo(acrylicTexture,[])
+  const _metalTexture = useMemo(metalTexture,[])
   const [texture,setTexture] = useState(_grassTexture);
 
   const changeTexture = useCallback((value:number) =>{
     switch (value) {
       case 0: {
-        setTexture( _grassTexture);
+        setTexture( _asphaltTexture);
         break;
       }
       case 1: {
-        setTexture(_asphaltTexture);
+        setTexture(_grassTexture);
         break;
       }
       case 2: {
         setTexture(_acrylicTexture);
+        break;
+      }
+      case 3: {
+        setTexture(_metalTexture);
         break;
       }
       default: {
@@ -76,7 +80,6 @@ function Sphere() {
         metalnessMap={texture.metal}
         specularColorMap={texture.spec}
         lightMap={texture.gloss}
-        transparent={true}
       />
     </mesh>
   );

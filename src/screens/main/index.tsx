@@ -91,7 +91,6 @@ const MainScreen = ({}) => {
     gl_FragColor = mix(_texture1, _texture2, dispPower);
   }
   `;
-  const mouseWheel = useScroll();
 
   const setup = () => {
     scene = new THREE.Scene();
@@ -213,11 +212,8 @@ const MainScreen = ({}) => {
   };
 
   const transitionNext = () => {
-
-
     const current = slides[page.prev];
     const next = slides[page.current];
-
 
     const currentImages = current.querySelectorAll(".js-slide__img");
     const nextImages = next.querySelectorAll(".js-slide__img");
@@ -225,8 +221,8 @@ const MainScreen = ({}) => {
     const currentText = current.querySelectorAll(".js-slider__text-line div");
     const nextText = next.querySelectorAll(".js-slider__text-line div");
 
-    const currentBullet = bullets[page.current];
-    const nextBullet = bullets[page.prev];
+    const currentBullet = bullets[page.prev];
+    const nextBullet = bullets[page.current];
 
     const currentBulletTxt = currentBullet.querySelectorAll(
       ".js-slider-bullet__text"
@@ -242,8 +238,6 @@ const MainScreen = ({}) => {
       ".js-slider-bullet__line"
     );
 
-    const tl:any = gsap.timeline({ paused: true });
-
     if (state.initial) {
       gsap.to(".js-scroll", 1.5, {
         yPercent: 100,
@@ -254,130 +248,71 @@ const MainScreen = ({}) => {
       state.initial = false;
     }
 
-    tl.staggerFromTo(
-      currentImages,
-      1.5,
-      {
-        yPercent: 0,
-        scale: 1,
-      },
-      {
-        yPercent: -185,
-        scaleY: 1.5,
-        ease: Expo.easeInOut,
-      },
-      0.075
-    )
-      .to(
-        currentBulletTxt,
-        1.5,
-        {
-          alpha: 0.25,
-          ease: Linear.easeNone,
-        },
-        0
-      )
-      .set(
-        currentBulletLine,
-        {
-          transformOrigin: "right",
-        },
-        0
-      )
-      .to(
-        currentBulletLine,
-        1.5,
-        {
-          scaleX: 0,
-          ease: Expo.easeInOut,
-        },
-        0
-      );
+    // currentBullet
+    gsap.to(currentBulletTxt, {
+      alpha: 0.25,
+      ease: Linear.easeNone,
+      duration:1.5,
+    });
+    gsap.set(currentBulletLine, {
+      transformOrigin: "right",
+    });
+    gsap.to(currentBulletLine, {
+      scaleX: 0,
+      ease: Expo.easeInOut,
+      duration:1.5,
+    });
 
+    // currentText
     if (currentText) {
-      tl.fromTo(
+      gsap.fromTo(
         currentText,
-        2,
         {
           yPercent: 0,
         },
         {
           yPercent: -100,
           ease: Power4.easeInOut,
-        },
-        0
+          duration:2,
+        }
       );
     }
-
-    tl.set(current, {
+    gsap.set(current, {
       autoAlpha: 0,
-    }).set(
-      next,
-      {
-        autoAlpha: 1,
-      },
-      1
-    );
-
+    });
+    gsap.set(next, {
+      autoAlpha: 1,
+    });
+    // nextText
     if (nextText) {
-      tl.fromTo(
+      gsap.fromTo(
         nextText,
-        2,
         {
           yPercent: 100,
         },
         {
           yPercent: 0,
           ease: Power4.easeOut,
-        },
-        1.5
+          duration:2,
+        }
       );
     }
 
-    tl.staggerFromTo(
-      nextImages,
-      1.5,
-      {
-        yPercent: 150,
-        scaleY: 1.5,
-      },
-      {
-        yPercent: 0,
-        scaleY: 1,
-        ease: Expo.easeInOut,
-      },
-      0.075,
-      1
-    )
-      .to(
-        nextBulletTxt,
-        1.5,
-        {
-          alpha: 1,
-          ease: Linear.easeNone,
-        },
-        1
-      )
-      .set(
-        nextBulletLine,
-        {
-          transformOrigin: "left",
-        },
-        1
-      )
-      .to(
-        nextBulletLine,
-        1.5,
-        {
-          scaleX: 1,
-          ease: Expo.easeInOut,
-        },
-        1
-      );
+    // nextBulletTxt
+    gsap.to(nextBulletTxt, {
+      alpha: 1,
+      ease: Linear.easeNone,
+      duration:1.5,
+    });
+    gsap.set(nextBulletLine, {
+      transformOrigin: "left",
+    });
+    gsap.to(nextBulletLine, {
+      scaleX: 1,
+      ease: Expo.easeInOut,
+      duration:1.5,
+    });
 
-    tl.play();
-
-    
     gsap.to(mat.uniforms.dispPower, {
       value: 1,
       ease: Expo.easeInOut,
@@ -389,7 +324,7 @@ const MainScreen = ({}) => {
         render();
         state.animating = false;
       },
-      duration:2.5
+      duration: 2.5,
     });
   };
 
@@ -418,20 +353,22 @@ const MainScreen = ({}) => {
   }, []);
 
   const onClickBg = () => {
-    const rand = Math.floor(Math.random() * 4);
-    console.log(rand);
-    if (rand !== page.current) {
-      nextSlide(rand);
+    if (detectedSurface !== page.current) {
+      nextSlide(detectedSurface);
       console.log("onClickBg-END");
     }
   };
 
+  useEffect(()=>{
+    onClickBg()
+  },[detectedSurface])
+
   return (
-    <div onClick={onClickBg}>
+    <>
       <BMEResultLayer />
       <AIResultLayer />
-      {/* <SphereLayer/> */}
-    </div>
+      <SphereLayer/>
+    </>
   );
 };
 

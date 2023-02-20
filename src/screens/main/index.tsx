@@ -4,10 +4,11 @@ import React, {
   useCallback,
   useMemo,
   useRef,
+  VoidFunctionComponent,
 } from "react";
 import gsap, { Power4, Expo, Linear } from "gsap";
 import * as THREE from "three";
-import { useWindowSize, useScroll } from "@/utils/hooks";
+import { useWindowSize } from "@/utils/hooks";
 import { Canvas, MeshProps, useLoader, useFrame } from "@react-three/fiber";
 import { BMEResultLayer, AIResultLayer, SphereLayer,MessageLayer } from "@/components";
 import {
@@ -15,6 +16,7 @@ import {
   asphaltTexture,
   acrylicTexture,
   metalTexture,
+  concreteTexture
 } from "@/textures";
 
 import bg_steel from "@/assets/bg_steel.png";
@@ -52,8 +54,57 @@ let texture: THREE.Texture | any = null;
 let mat: THREE.ShaderMaterial | any = null;
 let disp: THREE.Texture | any = null;
 
+const vert = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+
+const frag = `
+varying vec2 vUv;
+
+uniform sampler2D texture1;
+uniform sampler2D texture2;
+uniform sampler2D disp;
+
+uniform float dispPower;
+uniform float intensity;
+
+uniform vec2 size;
+uniform vec2 res;
+
+vec2 backgroundCoverUv( vec2 screenSize, vec2 imageSize, vec2 uv ) {
+  float screenRatio = screenSize.x / screenSize.y;
+  float imageRatio = imageSize.x / imageSize.y;
+  vec2 newSize = screenRatio < imageRatio 
+      ? vec2(imageSize.x * (screenSize.y / imageSize.y), screenSize.y)
+      : vec2(screenSize.x, imageSize.y * (screenSize.x / imageSize.x));
+  vec2 newOffset = (screenRatio < imageRatio 
+      ? vec2((newSize.x - screenSize.x) / 2.0, 0.0) 
+      : vec2(0.0, (newSize.y - screenSize.y) / 2.0)) / newSize;
+  return uv * screenSize / newSize + newOffset;
+}
+
+void main() {
+  vec2 uv = vUv;
+  
+  vec4 disp = texture2D(disp, uv);
+  vec2 dispVec = vec2(disp.x, disp.y);
+  
+  vec2 distPos1 = uv + (dispVec * intensity * dispPower);
+  vec2 distPos2 = uv + (dispVec * -(intensity * (1.0 - dispPower)));
+  
+  vec4 _texture1 = texture2D(texture1, distPos1);
+  vec4 _texture2 = texture2D(texture2, distPos2);
+  
+  gl_FragColor = mix(_texture1, _texture2, dispPower);
+}
+`;
+
 const MainScreen = ({}) => {
-  let size = useWindowSize();
+  let size:any = useWindowSize();
   const detectedSurface: number = appStates((s: any) => s.detectedSurface);
 
   const sphereRef = useRef<MeshProps | any>(null);
@@ -61,6 +112,7 @@ const MainScreen = ({}) => {
   const _asphaltTexture = useMemo(asphaltTexture, []);
   const _acrylicTexture = useMemo(acrylicTexture, []);
   const _metalTexture = useMemo(metalTexture, []);
+  const _concreteTexture = useMemo(concreteTexture, []);
   const [sphereTexture, setSphereTexture] = useState(_asphaltTexture);
 
   const changeSphereTexture = useCallback((value: number) => {
@@ -70,11 +122,11 @@ const MainScreen = ({}) => {
         break;
       }
       case 1: {
-        setSphereTexture(_grassTexture);
+        setSphereTexture(_acrylicTexture);
         break;
       }
       case 2: {
-        setSphereTexture(_acrylicTexture);
+        setSphereTexture(_grassTexture);
         break;
       }
       case 3: {
@@ -86,55 +138,6 @@ const MainScreen = ({}) => {
       }
     }
   }, []);
-
-  const vert = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-  `;
-
-  const frag = `
-  varying vec2 vUv;
-
-  uniform sampler2D texture1;
-  uniform sampler2D texture2;
-  uniform sampler2D disp;
-
-  uniform float dispPower;
-  uniform float intensity;
-
-  uniform vec2 size;
-  uniform vec2 res;
-
-  vec2 backgroundCoverUv( vec2 screenSize, vec2 imageSize, vec2 uv ) {
-    float screenRatio = screenSize.x / screenSize.y;
-    float imageRatio = imageSize.x / imageSize.y;
-    vec2 newSize = screenRatio < imageRatio 
-        ? vec2(imageSize.x * (screenSize.y / imageSize.y), screenSize.y)
-        : vec2(screenSize.x, imageSize.y * (screenSize.x / imageSize.x));
-    vec2 newOffset = (screenRatio < imageRatio 
-        ? vec2((newSize.x - screenSize.x) / 2.0, 0.0) 
-        : vec2(0.0, (newSize.y - screenSize.y) / 2.0)) / newSize;
-    return uv * screenSize / newSize + newOffset;
-  }
-
-  void main() {
-    vec2 uv = vUv;
-    
-    vec4 disp = texture2D(disp, uv);
-    vec2 dispVec = vec2(disp.x, disp.y);
-    
-    vec2 distPos1 = uv + (dispVec * intensity * dispPower);
-    vec2 distPos2 = uv + (dispVec * -(intensity * (1.0 - dispPower)));
-    
-    vec4 _texture1 = texture2D(texture1, distPos1);
-    vec4 _texture2 = texture2D(texture2, distPos2);
-    
-    gl_FragColor = mix(_texture1, _texture2, dispPower);
-  }
-  `;
 
   const setup = useCallback(() => {
     scene = new THREE.Scene();
@@ -161,7 +164,7 @@ const MainScreen = ({}) => {
     camera.position.z = 1;
   }, []);
 
-  const render = useCallback(() => {
+  const render = useCallback<VoidFunction|any>(() => {
     renderer.render(scene, camera);
   }, [renderer, scene, camera]);
 
@@ -190,15 +193,15 @@ const MainScreen = ({}) => {
   const createMesh = useCallback(() => {
     mat = new THREE.ShaderMaterial({
       uniforms: {
-        dispPower: { type: "f", value: 0.0 },
-        intensity: { type: "f", value: 0.5 },
+        dispPower: { value: 0.0 },
+        intensity: { value: 0.5 },
         res: {
           value: new THREE.Vector2(window.innerWidth, window.innerHeight),
         },
         size: { value: new THREE.Vector2(1, 1) },
-        texture1: { type: "t", value: textures[0] },
-        texture2: { type: "t", value: textures[1] },
-        disp: { type: "t", value: disp },
+        texture1: { value: textures[0] },
+        texture2: { value: textures[1] },
+        disp: { value: disp },
       },
       transparent: true,
       vertexShader: vert,
@@ -390,7 +393,7 @@ const MainScreen = ({}) => {
     });
   };
 
-  const nextSlide = (value) => {
+  const nextSlide = (value:number) => {
     if (state.animating) return;
     state.animating = true;
     page.prev = page.current;

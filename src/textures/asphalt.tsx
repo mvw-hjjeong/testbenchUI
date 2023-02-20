@@ -7,21 +7,19 @@ const asphaltT = ():TextureT => {
   const repeatX = 4;
   const repeatY = 2;
 
-  const [base, bump, normal, ao, rough, metal, spec, gloss] = useLoader(
+  const [base, bump, normal, ao, rough, metal] = useLoader(
     THREE.TextureLoader,
     [
-      "../assets/pbr/asphalt/basecolor.jpg",
-      "../assets/pbr/asphalt/displacement.jpg",
-      "../assets/pbr/asphalt/normal.jpg",
-      "../assets/pbr/asphalt/ao.jpg",
-      "../assets/pbr/asphalt/roughness.jpg",
-      "../assets/pbr/asphalt/metalness.jpg",
-      "../assets/pbr/asphalt/specular.jpg",
-      "../assets/pbr/asphalt/gloss.jpg",
+      "../assets/pbr/asphalt/basecolor.png",
+      "../assets/pbr/asphalt/displacement.png",
+      "../assets/pbr/asphalt/normal.png",
+      "../assets/pbr/asphalt/ao.png",
+      "../assets/pbr/asphalt/roughness.png",
+      "../assets/pbr/asphalt/metalness.png",
     ]
   );
 
-  [base, bump, normal, ao, rough, metal, spec, gloss].forEach((texture) => {
+  [base, bump, normal, ao, rough, metal].forEach((texture) => {
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(repeatX, repeatY);
@@ -34,8 +32,6 @@ const asphaltT = ():TextureT => {
     ao,
     rough,
     metal,
-    spec,
-    gloss,
     bScale: 0.1
   };
 };

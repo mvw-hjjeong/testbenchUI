@@ -7,7 +7,7 @@ import { OrbitControls} from "@react-three/drei";
 import {SphereLayerPropsT} from '@/types';
 import { Layer } from './styles';
 
-const SphereLayer = forwardRef(({sphereTexture}:SphereLayerPropsT, ref) => {
+const SphereLayer = forwardRef(({sphereTexture}:SphereLayerPropsT, ref:React.RefObject<HTMLElement>|any) => {
   return (
     <Layer>
       <Canvas
@@ -18,8 +18,8 @@ const SphereLayer = forwardRef(({sphereTexture}:SphereLayerPropsT, ref) => {
         <pointLight position={[5, 10, -10]} intensity={0.5} />
         <pointLight position={[0, 0, 10]} intensity={0.5} />
         <Suspense fallback={null}>
-          <mesh position={[0, 0, 0]} ref={ref}>
-            <sphereGeometry args={[3, 1024, 1024]} />
+          <mesh position={[0, 0, 0]} rotation={[0,50,0]} ref={ref}>
+            <sphereGeometry args={[3, 2048, 2048]} />
             <meshPhysicalMaterial
               transparent
               map={sphereTexture.base}

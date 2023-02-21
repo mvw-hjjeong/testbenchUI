@@ -9,6 +9,13 @@ export default create((set) => ({
       state.detectedSurface = value;
     })
   ),
+  detectedTime:"",
+  setDetectedTime: (value:string) =>
+  set(
+    produce((state) => {
+      state.detectedTime = value;
+    })
+  ),
   sources: {
     pairs: [
       {

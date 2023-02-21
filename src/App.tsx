@@ -4,14 +4,24 @@ import appStates from "@/utils/appStates";
 
 function App() {
   const fs = window.require("fs");
-  const setDetectedSurface = appStates((s:any) => s.setDetectedSurface);
+  const [
+    detectedSurface, 
+    setDetectedSurface,
+    setDetectedTime
+  ] = appStates((s:any) => [
+    s.detectedSurface,
+    s.setDetectedSurface,
+    s.setDetectedTime
+  ]);
 
   useEffect(() => {
     setInterval(()=> {
       fs.readFile("D:/user/Desktop/fs.txt", "utf-8", (err:Error, data:any) => {
         if (err) throw err;
-        setDetectedSurface(parseInt(data));
-
+        if(data!==detectedSurface){
+          setDetectedSurface(parseInt(data));
+          setDetectedTime(new Date().toDateString());
+        }
       });
     }, 1000);
   });

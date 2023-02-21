@@ -35,7 +35,9 @@ const concreteTexture = ():TextureT => {
     ao,
     rough,
     metal,
-    bScale: 0.1
+    bScale: 0.1,
+    metalness:0,
+    roughness:1,
   };
 };
 

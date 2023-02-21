@@ -11,7 +11,7 @@ const metalTexture = ():TextureT => {
     THREE.TextureLoader,
     [
       "../assets/pbr/metal/basecolor.jpg",
-      "../assets/pbr/metal/displacement.png",
+      "../assets/pbr/metal/displacement.jpg",
       "../assets/pbr/metal/normal.jpg",
       "../assets/pbr/metal/roughness.jpg",
       "../assets/pbr/metal/metalness.jpg",
@@ -30,7 +30,9 @@ const metalTexture = ():TextureT => {
     normal,
     rough,
     metal,
-    bScale: 1.0
+    bScale: 0,
+    metalness:1,
+    roughness:1,
   };
 };
 

@@ -2,13 +2,25 @@ import React, {
   Suspense,
   forwardRef
 } from "react";
-import { Layer } from './styles';
+import { LogLayer,TimeLayer } from './styles';
+import appStates from "@/utils/appStates";
 
 const MessageLayer = () => {
+  const [
+    detectedTime, 
+  ] = appStates((s:any) => [
+    s.detectedTime,
+  ]);
+
   return (
-     <Layer>
+    <>
+     <LogLayer>
           <p>상태메시지</p>
-     </Layer>
+     </LogLayer>
+     <TimeLayer>
+          <p>{detectedTime}</p>
+     </TimeLayer>
+     </>
   );
 };
 

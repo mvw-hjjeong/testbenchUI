@@ -1,13 +1,16 @@
 import React, {
   Suspense,
   forwardRef,
+  useEffect,useRef
 } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls} from "@react-three/drei";
+import { Canvas,useLoader } from "@react-three/fiber";
+import { OrbitControls,Environment} from "@react-three/drei";
 import {SphereLayerPropsT} from '@/types';
 import { Layer } from './styles';
+import * as THREE from "three";
 
 const SphereLayer = forwardRef(({sphereTexture}:SphereLayerPropsT, ref:React.RefObject<HTMLElement>|any) => {
+
   return (
     <Layer>
       <Canvas
@@ -15,10 +18,15 @@ const SphereLayer = forwardRef(({sphereTexture}:SphereLayerPropsT, ref:React.Ref
           position: [5, 5, 5],
         }}
       >
-        <pointLight position={[5, 10, -10]} intensity={0.5} />
-        <pointLight position={[0, 0, 10]} intensity={0.5} />
+        {/* <ambientLight intensity={0.6}/> */}
+        <directionalLight
+          position={[1, 1, 1]} //
+          intensity={0.3}
+          color={"black"}
+        />
         <Suspense fallback={null}>
-          <mesh position={[0, 0, 0]} rotation={[0,50,0]} ref={ref}>
+          <Environment preset="sunset" />
+          <mesh position={[0, 0, 0]} ref={ref}>
             <sphereGeometry args={[3, 2048, 2048]} />
             <meshPhysicalMaterial
               transparent
@@ -29,12 +37,13 @@ const SphereLayer = forwardRef(({sphereTexture}:SphereLayerPropsT, ref:React.Ref
               normalMap={sphereTexture.normal}
               roughnessMap={sphereTexture.rough}
               metalnessMap={sphereTexture.metal}
-              specularColorMap={sphereTexture.spec}
-              lightMap={sphereTexture.gloss}
+              metalness={sphereTexture.metalness}
+              roughness={sphereTexture.roughness}
             />
+           
           </mesh>
+          <OrbitControls autoRotate enableRotate={false} enableZoom={false}/>
         </Suspense>
-        <OrbitControls autoRotate autoRotateSpeed={0.3}/>
       </Canvas>
       </Layer>
   );

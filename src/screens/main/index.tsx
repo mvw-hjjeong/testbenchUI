@@ -306,7 +306,7 @@ const MainScreen = ({}) => {
           changeSphereTexture(detectedSurface);
           gsap.to(sphereRef.current.material, {
             opacity: 1,
-            duration: 2,
+            duration: 1,
             ease: Power4.easeInOut,
           });
         },

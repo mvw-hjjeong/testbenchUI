@@ -26,9 +26,9 @@ export type TextureT = {
   ao?: THREE.Texture;
   rough?: THREE.Texture;
   metal?: THREE.Texture;
-  spec?: THREE.Texture;
-  gloss?: THREE.Texture;
   bScale?: number;
+  metalness?:number;
+  roughness?:number;
 };
 
 export type SphereLayerT={

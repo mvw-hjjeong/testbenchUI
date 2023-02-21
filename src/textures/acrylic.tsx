@@ -3,11 +3,11 @@ import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {TextureT} from "@/types"
 
-const acrylicT = ():TextureT => {
+const acrylicTexture = ():TextureT => {
   const repeatX = 4;
   const repeatY = 2;
 
-  const [base, bump, normal, ao, rough, metal] = useLoader(
+  const [base, bump, normal, ao, rough] = useLoader(
     THREE.TextureLoader,
     [
       "../assets/pbr/acrylic/basecolor.jpg",
@@ -15,11 +15,10 @@ const acrylicT = ():TextureT => {
       "../assets/pbr/acrylic/normal.jpg",
       "../assets/pbr/acrylic/ao.jpg",
       "../assets/pbr/acrylic/roughness.jpg",
-      "../assets/pbr/acrylic/metalness.jpg",
     ]
   );
 
-  [base, bump, normal, ao, rough, metal].forEach((texture) => {
+  [base, bump, normal, ao, rough].forEach((texture) => {
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(repeatX, repeatY);
@@ -31,9 +30,10 @@ const acrylicT = ():TextureT => {
     normal,
     ao,
     rough,
-    metal,
-    bScale: 1.0
+    bScale: 0,
+    metalness:0,
+    roughness:1,
   };
 };
 
-export default acrylicT;
+export default acrylicTexture;

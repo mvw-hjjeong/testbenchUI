@@ -7,7 +7,7 @@ export const Layer = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'helvetica neue', helvetica, sans-serif;
+    font-family: 'LINESeedKR-Bd', sans-serif;
     overflow: hidden;
     background:#111;
     z-index:3;
@@ -22,7 +22,7 @@ export const Layer = styled.div`
     left: 50%;
     transform: translateX(-50%);
     color: rgba(#fff, 0.5);
-    font-family: 'font-2';
+    font-family: 'LINESeedKR-Bd';
     font-size: calc(0.5rem + 0.35vw);
     z-index: 10;
   }
@@ -55,7 +55,7 @@ export const Layer = styled.div`
       display: flex;
       align-items: center;
       font-size: calc(0.5rem + 0.35vw);
-      font-family: 'helvetica neue', helvetica, sans-serif;
+      font-family: 'LINESeedKR-Bd', helvetica, sans-serif;
       
       span{
         position: relative;
@@ -130,7 +130,7 @@ export const Layer = styled.div`
       bottom: calc(2rem + 3vw);
       left: calc(2rem + 3vw);
       z-index: 10;
-      font-family: 'GmarketSansBold';
+      font-family: 'LINESeedKR-Bd';
       font-size: calc(1rem + 4vw);
       text-transform: uppercase;
       transform-origin: top;

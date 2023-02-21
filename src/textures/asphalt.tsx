@@ -3,7 +3,7 @@ import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {TextureT} from "@/types"
 
-const asphaltT = ():TextureT => {
+const asphaltTexture = ():TextureT => {
   const repeatX = 4;
   const repeatY = 2;
 
@@ -32,8 +32,10 @@ const asphaltT = ():TextureT => {
     ao,
     rough,
     metal,
-    bScale: 0.1
+    bScale: 0.1,
+    metalness:0,
+    roughness:1,
   };
 };
 
-export default asphaltT;
+export default asphaltTexture;

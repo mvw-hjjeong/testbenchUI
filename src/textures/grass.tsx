@@ -4,7 +4,7 @@ import * as THREE from "three";
 import {TextureT} from "@/types"
 
 
-const grassT = ():TextureT => {
+const grassTexture = ():TextureT => {
   const repeatX = 8;
   const repeatY = 4;
 
@@ -32,8 +32,10 @@ const grassT = ():TextureT => {
     ao,
     rough,
     metal,
-    bScale: 1.0
+    bScale: 1.0,
+    metalness:0,
+    roughness:1,
   };
 };
 
-export default grassT;
+export default grassTexture;

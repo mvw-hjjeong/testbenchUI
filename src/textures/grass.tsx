@@ -3,6 +3,8 @@ import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {TextureT} from "@/types"
 
+const name = "grass"
+const extension = "png"
 
 const grassTexture = ():TextureT => {
   const repeatX = 8;
@@ -11,12 +13,12 @@ const grassTexture = ():TextureT => {
   const [base, bump, normal, ao, rough, metal] = useLoader(
     THREE.TextureLoader,
     [
-      "../assets/pbr/grass/basecolor.png",
-      "../assets/pbr/grass/displacement.png",
-      "../assets/pbr/grass/normal.png",
-      "../assets/pbr/grass/ao.png",
-      "../assets/pbr/grass/roughness.png",
-      "../assets/pbr/grass/metalness.png",
+      `../assets/pbr/${name}/basecolor.${extension}`,
+      `../assets/pbr/${name}/displacement.${extension}`,
+      `../assets/pbr/${name}/normal.${extension}`,
+      `../assets/pbr/${name}/ao.${extension}`,
+      `../assets/pbr/${name}/roughness.${extension}`,
+      `../assets/pbr/${name}/metalness.${extension}`,
     ]
   );
   [base, bump, normal, ao, rough, metal].forEach((texture) => {

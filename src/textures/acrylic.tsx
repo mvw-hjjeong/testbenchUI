@@ -3,6 +3,9 @@ import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {TextureT} from "@/types"
 
+const name = "acrylic"
+const extension = "jpg"
+
 const acrylicTexture = ():TextureT => {
   const repeatX = 4;
   const repeatY = 2;
@@ -10,11 +13,11 @@ const acrylicTexture = ():TextureT => {
   const [base, bump, normal, ao, rough] = useLoader(
     THREE.TextureLoader,
     [
-      "../assets/pbr/acrylic/basecolor.jpg",
-      "../assets/pbr/acrylic/displacement.jpg",
-      "../assets/pbr/acrylic/normal.jpg",
-      "../assets/pbr/acrylic/ao.jpg",
-      "../assets/pbr/acrylic/roughness.jpg",
+      `../assets/pbr/${name}/basecolor.${extension}`,
+      `../assets/pbr/${name}/displacement.${extension}`,
+      `../assets/pbr/${name}/normal.${extension}`,
+      `../assets/pbr/${name}/ao.${extension}`,
+      `../assets/pbr/${name}/roughness.${extension}`,
     ]
   );
 

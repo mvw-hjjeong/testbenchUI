@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-      "target": "es6",
+      "target": "esnext",
       "lib": ["DOM", "DOM.Iterable", "ESNext"],
       "types": ["vite/client", "node"],
-      "module": "CommonJS",
+      "module": "esnext",
       "esModuleInterop": true,
       "noUnusedLocals": false,
       "noUnusedParameters": false,

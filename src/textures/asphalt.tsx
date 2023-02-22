@@ -3,6 +3,9 @@ import { Canvas, useLoader, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import {TextureT} from "@/types"
 
+const name = "asphalt"
+const extension = "png"
+
 const asphaltTexture = ():TextureT => {
   const repeatX = 4;
   const repeatY = 2;
@@ -10,12 +13,12 @@ const asphaltTexture = ():TextureT => {
   const [base, bump, normal, ao, rough, metal] = useLoader(
     THREE.TextureLoader,
     [
-      "../assets/pbr/asphalt/basecolor.png",
-      "../assets/pbr/asphalt/displacement.png",
-      "../assets/pbr/asphalt/normal.png",
-      "../assets/pbr/asphalt/ao.png",
-      "../assets/pbr/asphalt/roughness.png",
-      "../assets/pbr/asphalt/metalness.png",
+      `../assets/pbr/${name}/basecolor.${extension}`,
+      `../assets/pbr/${name}/displacement.${extension}`,
+      `../assets/pbr/${name}/normal.${extension}`,
+      `../assets/pbr/${name}/ao.${extension}`,
+      `../assets/pbr/${name}/roughness.${extension}`,
+      `../assets/pbr/${name}/metalness.${extension}`,
     ]
   );
 
@@ -32,7 +35,7 @@ const asphaltTexture = ():TextureT => {
     ao,
     rough,
     metal,
-    bScale: 0.1,
+    bScale: 0.08,
     metalness:0,
     roughness:1,
   };

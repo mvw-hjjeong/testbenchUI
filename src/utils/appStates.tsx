@@ -2,6 +2,13 @@ import { create } from 'zustand';
 import produce from "immer";
 
 export default create((set) => ({
+  isSplash:true,
+  setSplash: (value:boolean) =>
+  set(
+    produce((state) => {
+      state.isSplash = value;
+    })
+  ),
   detectedSurface: 0,
   setDetectedSurface: (value:number) =>
   set(

@@ -1,7 +1,4 @@
-import React, {
-  Suspense,
-  forwardRef
-} from "react";
+import React from "react";
 import { LogLayer,TimeLayer } from './styles';
 import appStates from "@/utils/appStates";
 
@@ -14,9 +11,9 @@ const MessageLayer = () => {
 
   return (
     <>
-     <LogLayer>
+     {/* <LogLayer>
           <p>상태메시지</p>
-     </LogLayer>
+     </LogLayer> */}
      <TimeLayer>
           <p>{detectedTime}</p>
      </TimeLayer>
